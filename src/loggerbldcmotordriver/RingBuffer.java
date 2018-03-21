@@ -55,4 +55,8 @@ public class RingBuffer<T>
         return getSize() == 0;
     }
     
+    public synchronized void clear(){
+        oldestElement = 0;
+        nextElement = 0;
+    }
 }

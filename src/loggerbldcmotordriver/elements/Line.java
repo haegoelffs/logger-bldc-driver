@@ -14,9 +14,9 @@ import loggerbldcmotordriver.references.ReferencePoint;
  */
 public class Line implements IReferencePointContainer, IDrawable
 {
-    private AReferencePoint reference, startPoint, endPoint;
-    private int width;
-    private Color color;
+    protected AReferencePoint reference, startPoint, endPoint;
+    protected int width;
+    protected Color color;
 
     public Line(AReferencePoint reference, int width, Color color) {
         this.reference = reference;
@@ -27,9 +27,26 @@ public class Line implements IReferencePointContainer, IDrawable
         this.endPoint = new ReferencePoint(0, 0, 0, reference);
     }
     
-    public Line setDimension(int x, int y){
+    public Line set_from_to(int x_from, int y_from, int x_to, int y_to){
+        this.startPoint.setX(x_from);
+        this.startPoint.setY(y_from);
+        
+        this.endPoint.setX(x_to);
+        this.endPoint.setY(y_to);
+        
+        return this;
+    }
+    
+    public Line set_to(int x, int y){
         this.endPoint.setX(x);
         this.endPoint.setY(y);
+        
+        return this;
+    }
+    
+    public Line set_from(int x, int y){
+        this.startPoint.setX(x);
+        this.startPoint.setY(y);
         
         return this;
     }

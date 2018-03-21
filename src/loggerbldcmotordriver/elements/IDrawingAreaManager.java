@@ -9,5 +9,5 @@ import javafx.scene.canvas.GraphicsContext;
  */
 public interface IDrawingAreaManager
 {
-    public void resetArea(GraphicsContext gc);
+    public void resetArea();
 }

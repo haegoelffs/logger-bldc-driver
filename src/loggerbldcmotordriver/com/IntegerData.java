@@ -1,5 +1,5 @@
 
-package loggerbldcmotordriver;
+package loggerbldcmotordriver.com;
 
 /**
  *
@@ -35,6 +35,4 @@ public class IntegerData
     public String toString() {
         return String.format("Time: %dms Value: %d", timestamp_ms, data);
     }
-    
-    
 }

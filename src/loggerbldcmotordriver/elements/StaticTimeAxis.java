@@ -34,14 +34,14 @@ public class StaticTimeAxis implements IDrawable
         
         lines = new ArrayList<>();
         
-        Line zeroLine = new Line(zero_point, 2, Color.BLACK).setDimension(-right_lower_corner.getX(), 0);
+        Line zeroLine = new Line(zero_point, 2, Color.BLACK).set_to(-right_lower_corner.getX(), 0);
         lines.add(zeroLine);
         
         int nr_of_lines = (int)(right_lower_corner.getX()/line_intervall_px)+1;
         
         for(int cnt = 0; cnt<nr_of_lines; cnt++){
             ReferencePoint position = new ReferencePoint(-cnt*line_intervall_px, 0, 0, right_lower_corner);
-            lines.add(new Line(position, 1, Color.GRAY).setDimension(0, -right_lower_corner.getY()));
+            lines.add(new Line(position, 1, Color.GRAY).set_to(0, -right_lower_corner.getY()));
         }
     }
 

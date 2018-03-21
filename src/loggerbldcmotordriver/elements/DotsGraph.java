@@ -1,14 +1,13 @@
 package loggerbldcmotordriver.elements;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import loggerbldcmotordriver.IDataSink;
-import loggerbldcmotordriver.IntegerData;
+import loggerbldcmotordriver.com.IntegerData;
 import loggerbldcmotordriver.RingBuffer;
 import loggerbldcmotordriver.RingBufferException;
 import loggerbldcmotordriver.StaticRingBuffer;
+import loggerbldcmotordriver.com.LongData;
 import loggerbldcmotordriver.references.AReferencePoint;
 import loggerbldcmotordriver.references.ReferencePoint;
 
@@ -16,9 +15,8 @@ import loggerbldcmotordriver.references.ReferencePoint;
  *
  * @author simon
  */
-public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
+public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
 {
-
     private final AReferencePoint zero_position;
     private final IDrawingAreaManager manager;
 
@@ -27,7 +25,7 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
     private final StaticRingBuffer<Dot> dotsPool;
     private final IntegerData initData;
 
-    private final RingBuffer<IntegerData> dataToDrawBuffer;
+    private final RingBuffer<LongData> dataToDrawBuffer;
 
     private int lenght_px;
 
@@ -46,7 +44,7 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
      * @param dotsColor
      * @param manager
      */
-    public JumpingValuesDrawer(
+    public DotsGraph(
             AReferencePoint zero_position,
             int lenght_px,
             double xScale_px_per_ms,
@@ -68,7 +66,7 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
         dotsPool = new StaticRingBuffer<>(Dot.class, lenght_px);
         initData = new IntegerData(0, 0);
 
-        dataToDrawBuffer = new RingBuffer<>(IntegerData.class, lenght_px);
+        dataToDrawBuffer = new RingBuffer<>(LongData.class, lenght_px);
 
         for (int cnt = 0; cnt < lenght_px; cnt++) {
             dotsPool.put(new Dot(new ReferencePoint(0, 0, 0, zero_position), dotsRadius, dotsColor));
@@ -81,13 +79,13 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
         if (elapsed_t_ms >= section_t_start
                 && elapsed_t_ms <= section_t_stop) {
 
-            IntegerData data = dataToDrawBuffer.get();
+            LongData data = dataToDrawBuffer.get();
             if (data != null) {
                 // new data to draw
 
                 Dot dot = dotsPool.getNext();
                 // calc position
-                long delta_t = data.getTimestamp_ms() - section_t_start;
+                long delta_t = data.getTimestamp_us()/1000- section_t_start;
                 dot.getPosition().setX((int) (delta_t * xScale_px_per_ms));
                 dot.getPosition().setY((int) (data.getData() * yScale_px_per_value));
 
@@ -100,7 +98,7 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
             this.section_t_start = elapsed_t_ms;
             this.section_t_stop = section_t_start + (long) (lenght_px / xScale_px_per_ms);
 
-            manager.resetArea(gc);
+            manager.resetArea();
         }
     }
 
@@ -119,7 +117,7 @@ public class JumpingValuesDrawer implements ITimeSynchronizedDrawable, IDataSink
     }
 
     @Override
-    public void put(IntegerData data) {
+    public void put(LongData data) {
         try {
             dataToDrawBuffer.put(data);
         }

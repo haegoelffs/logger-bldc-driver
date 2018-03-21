@@ -1,5 +1,6 @@
 package loggerbldcmotordriver;
 
+import loggerbldcmotordriver.com.IntegerData;
 import java.util.Timer;
 import java.util.TimerTask;
 

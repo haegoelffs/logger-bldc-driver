@@ -2,12 +2,11 @@ package loggerbldcmotordriver.elements;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import loggerbldcmotordriver.IDataSink;
 import loggerbldcmotordriver.com.IntegerData;
 import loggerbldcmotordriver.RingBuffer;
 import loggerbldcmotordriver.RingBufferException;
 import loggerbldcmotordriver.StaticRingBuffer;
-import loggerbldcmotordriver.com.LongData;
+import loggerbldcmotordriver.com.TimeData;
 import loggerbldcmotordriver.references.AReferencePoint;
 import loggerbldcmotordriver.references.ReferencePoint;
 
@@ -18,14 +17,13 @@ import loggerbldcmotordriver.references.ReferencePoint;
 public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
 {
     private final AReferencePoint zero_position;
-    private final IDrawingAreaManager manager;
 
     private long section_t_start, section_t_stop;
 
     private final StaticRingBuffer<Dot> dotsPool;
     private final IntegerData initData;
 
-    private final RingBuffer<LongData> dataToDrawBuffer;
+    private final RingBuffer<IDataPoint> dataToDrawBuffer;
 
     private int lenght_px;
 
@@ -50,10 +48,8 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
             double xScale_px_per_ms,
             double yScale_px_per_value,
             int dotsRadius,
-            Color dotsColor,
-            IDrawingAreaManager manager) {
+            Color dotsColor) {
         this.zero_position = zero_position;
-        this.manager = manager;
 
         this.lenght_px = lenght_px;
         this.xScale_px_per_ms = xScale_px_per_ms;
@@ -66,7 +62,7 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
         dotsPool = new StaticRingBuffer<>(Dot.class, lenght_px);
         initData = new IntegerData(0, 0);
 
-        dataToDrawBuffer = new RingBuffer<>(LongData.class, lenght_px);
+        dataToDrawBuffer = new RingBuffer<>(IDataPoint.class, lenght_px);
 
         for (int cnt = 0; cnt < lenght_px; cnt++) {
             dotsPool.put(new Dot(new ReferencePoint(0, 0, 0, zero_position), dotsRadius, dotsColor));
@@ -79,7 +75,7 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
         if (elapsed_t_ms >= section_t_start
                 && elapsed_t_ms <= section_t_stop) {
 
-            LongData data = dataToDrawBuffer.get();
+            IDataPoint data = dataToDrawBuffer.get();
             if (data != null) {
                 // new data to draw
 
@@ -87,7 +83,7 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
                 // calc position
                 long delta_t = data.getTimestamp_us()/1000- section_t_start;
                 dot.getPosition().setX((int) (delta_t * xScale_px_per_ms));
-                dot.getPosition().setY((int) (data.getData() * yScale_px_per_value));
+                dot.getPosition().setY((int) (data.getValue()* yScale_px_per_value));
 
                 // draw
                 dot.draw(gc);
@@ -97,8 +93,6 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
             // outside of the range --> reset
             this.section_t_start = elapsed_t_ms;
             this.section_t_stop = section_t_start + (long) (lenght_px / xScale_px_per_ms);
-
-            manager.resetArea();
         }
     }
 
@@ -117,7 +111,7 @@ public class DotsGraph implements ITimeSynchronizedDrawable, IDataSink
     }
 
     @Override
-    public void put(LongData data) {
+    public void put(IDataPoint data) {
         try {
             dataToDrawBuffer.put(data);
         }

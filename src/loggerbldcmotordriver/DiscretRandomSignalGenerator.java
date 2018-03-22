@@ -1,7 +1,7 @@
 package loggerbldcmotordriver;
 
 import loggerbldcmotordriver.com.IntegerData;
-import loggerbldcmotordriver.com.LongData;
+import loggerbldcmotordriver.com.TimeData;
 
 /**
  *
@@ -16,7 +16,7 @@ public class DiscretRandomSignalGenerator extends Thread
     private int dc_value;
 
     private final TimeReference timeReference;
-    private final RingBuffer<LongData> buffer;
+    private final RingBuffer<TimeData> buffer;
 
     public DiscretRandomSignalGenerator(
             int min_sleep_ms, 
@@ -24,7 +24,7 @@ public class DiscretRandomSignalGenerator extends Thread
             int max_amplitude, 
             int dc_value, 
             TimeReference timeReference, 
-            RingBuffer<LongData> buffer) {
+            RingBuffer<TimeData> buffer) {
         this.min_sleep_ms = min_sleep_ms;
         this.max_sleep_ms = max_sleep_ms;
         this.max_amplitude = max_amplitude;
@@ -43,7 +43,7 @@ public class DiscretRandomSignalGenerator extends Thread
                 Thread.sleep(random_sleep_ms);
 
                 int random_value = (int) (Math.random() * (max_amplitude)) -max_amplitude/2 + dc_value;
-                buffer.put(new LongData(timeReference.getElapsedTime_ms(), random_value));
+                buffer.put(new TimeData(timeReference.getElapsedTime_ms(), random_value));
             }
         }
         catch (Exception ex) {

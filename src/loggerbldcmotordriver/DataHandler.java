@@ -1,7 +1,9 @@
 
 package loggerbldcmotordriver;
 
-import loggerbldcmotordriver.com.LongData;
+import loggerbldcmotordriver.elements.IDataSink;
+import loggerbldcmotordriver.com.DataPool;
+import loggerbldcmotordriver.com.TimeData;
 
 /**
  *
@@ -9,35 +11,48 @@ import loggerbldcmotordriver.com.LongData;
  */
 public class DataHandler extends Thread
 {
-
-    private RingBuffer<LongData> sourceBuffer;
+    private DataPool dataPool;
+    private RingBuffer<TimeData> sourceBuffer;
     
     private IDataSink dataSink;
     
-    private int resolution_in_ms;
+    private int resolution_in_us;
 
-    public DataHandler(RingBuffer<LongData> sourceBuffer, IDataSink dataSink, int resolution_in_ms) {
+    public DataHandler(RingBuffer<TimeData> sourceBuffer, IDataSink dataSink, DataPool dataPool, int resolution_in_us) {
         super("Data Handler");
         
         this.sourceBuffer = sourceBuffer;
         this.dataSink = dataSink;
-        this.resolution_in_ms = resolution_in_ms;
+        this.dataPool = dataPool;
+        this.resolution_in_us = resolution_in_us;
         
         this.start();
     }
 
     @Override
     public void run() {
-        long time_last_data_ms = 0;
+        TimeDataGroup currentGroup = dataPool.getTimeDataGroup().setDuration_in_us(resolution_in_us).setStart_in_us(0);
+        TimeData previousData = null;
         
         while(true){
-            LongData data = sourceBuffer.get();
+            TimeData data = sourceBuffer.get();
             if(data != null){
-                long timestamp_ms = data.getTimestamp_us()/1000;
-                
-                if(time_last_data_ms < timestamp_ms){
-                    // new data
-                    dataSink.put(data);
+                if(currentGroup.getStart_in_us() + currentGroup.getDuration_in_us() > data.getTimestamp_us()){
+                    // timestamp of data inside this group
+                    previousData = data;
+                    
+                    if(currentGroup.getFirstData() == null){
+                        currentGroup.setFirstData(data);
+                    }
+                }else{
+                    // timestamp of data outside of the group --> open new group
+                    currentGroup.setLastData(previousData);
+                    dataSink.put(currentGroup);
+                    
+                    currentGroup = dataPool.getTimeDataGroup()
+                            .setDuration_in_us(resolution_in_us)
+                            .setStart_in_us(currentGroup.getStart_in_us() + resolution_in_us)
+                            .setFirstData(data);
                 }
             }
         }

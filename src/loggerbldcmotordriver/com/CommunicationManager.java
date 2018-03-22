@@ -45,14 +45,16 @@ public class CommunicationManager extends Thread
 
     private DataPool dataPool;
 
-    private RingBuffer<LongData> rotationFrequenzy_buffer;
+    private RingBuffer<TimeData> rotationFrequenzy_buffer;
+    private TimeData lastLongData;
 
     public CommunicationManager(DataPool dataPool, PicocomWrapper picocom) {
         super("Data Handler");
         this.dataPool = dataPool;
         this.picocom = picocom;
 
-        rotationFrequenzy_buffer = new RingBuffer<>(LongData.class, 500);
+        rotationFrequenzy_buffer = new RingBuffer<>(TimeData.class, 500);
+        lastLongData = dataPool.getTimeData();
 
         this.start();
     }
@@ -88,7 +90,7 @@ public class CommunicationManager extends Thread
     }
 
     // getter & setter
-    public RingBuffer<LongData> getRotationFrequenzy_buffer() {
+    public RingBuffer<TimeData> getRotationFrequenzy_buffer() {
         return rotationFrequenzy_buffer;
     }
 
@@ -122,7 +124,13 @@ public class CommunicationManager extends Thread
                 case ROTATION_FREQUENZY:
                     // unsigned int 32bit
                     long frequenzy = interpretAsLong(dataStream);
-                    rotationFrequenzy_buffer.put(dataPool.getLongData().set(timestamp_us, frequenzy));
+                    TimeData data = dataPool.getTimeData().set(timestamp_us, frequenzy,lastLongData);
+                    
+                    lastLongData.setYounger(data);
+                    
+                    lastLongData = data;
+                    rotationFrequenzy_buffer.put(data);
+                    
                     break;
 
                 case ETX:

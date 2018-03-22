@@ -2,14 +2,11 @@
 package loggerbldcmotordriver.elements;
 
 import javafx.scene.canvas.GraphicsContext;
-import loggerbldcmotordriver.IDataSink;
 import loggerbldcmotordriver.com.IntegerData;
 import loggerbldcmotordriver.RingBuffer;
 import loggerbldcmotordriver.RingBufferException;
 import loggerbldcmotordriver.StaticRingBuffer;
-import loggerbldcmotordriver.com.LongData;
 import loggerbldcmotordriver.references.AReferencePoint;
-import loggerbldcmotordriver.references.AbsoluteReferencePoint;
 
 /**
  *
@@ -19,14 +16,14 @@ import loggerbldcmotordriver.references.AbsoluteReferencePoint;
 public abstract class AGraph<T> implements ITimeSynchronizedDrawable, IDataSink
 {
     protected AReferencePoint zero_position;
-    protected final IDrawingAreaManager manager;
 
-    protected long section_t_start, section_t_stop;
+    protected long xAxis_start_ms;
 
     protected final StaticRingBuffer<T> drawingElementsPool;
     protected final IntegerData initData;
 
-    protected final RingBuffer<LongData> dataToDrawBuffer;
+    protected final RingBuffer<IDataPoint> dataToDraw_buffer;
+    protected RingBuffer<IDataPoint> drawedData_buffer;
 
     protected int lenght_px;
 
@@ -44,55 +41,35 @@ public abstract class AGraph<T> implements ITimeSynchronizedDrawable, IDataSink
      * @param yScale_px_per_value
      */
     public AGraph(
-            IDrawingAreaManager manager,
             AReferencePoint zero_position,
             int lenght_px,
             double xScale_px_per_ms,
             double yScale_px_per_value) {
-        this.manager = manager;
         this.zero_position = zero_position;
 
         this.lenght_px = lenght_px;
         this.xScale_px_per_ms = xScale_px_per_ms;
         this.yScale_px_per_value = yScale_px_per_value;
-        
-        this.section_t_start = 0;
-        this.section_t_stop = (long) (lenght_px / xScale_px_per_ms);
 
         // init buffer for dots
         initData = new IntegerData(0, 0);
-        dataToDrawBuffer = new RingBuffer<>(LongData.class, lenght_px);
+        dataToDraw_buffer = new RingBuffer<>(IDataPoint.class, 20);
+        drawedData_buffer = new RingBuffer<>(IDataPoint.class, lenght_px);
         drawingElementsPool = initDrawingElementsPool();
-    }
-
-    @Override
-    public void draw(GraphicsContext gc, long elapsed_t_ms) {
-        // check range
-        if (elapsed_t_ms < section_t_start
-                || elapsed_t_ms > section_t_stop) {
-            
-            this.reset(elapsed_t_ms);
-            
-            return;
-        }
     }
     
     @Override
-    public void put(LongData data) {
+    public void put(IDataPoint data) {
         try {
-            dataToDrawBuffer.put(data);
+            dataToDraw_buffer.put(data);
         }
         catch (RingBufferException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    public void reset(long elapsed_t_ms){
-        // outside of the range --> reset
-            this.section_t_start = elapsed_t_ms;
-            this.section_t_stop = section_t_start + (long) (lenght_px / xScale_px_per_ms);
-
-            manager.resetArea();
+    public void reset(long xAxis_start_ms){
+        this.xAxis_start_ms = xAxis_start_ms;
     }
 
     // getter & setter
@@ -113,7 +90,6 @@ public abstract class AGraph<T> implements ITimeSynchronizedDrawable, IDataSink
     public int getLenght_px() {
         return lenght_px;
     }
-
     public void setLenght_px(int lenght_px) {
         this.lenght_px = lenght_px;
     }
@@ -121,11 +97,17 @@ public abstract class AGraph<T> implements ITimeSynchronizedDrawable, IDataSink
     public AReferencePoint getZero_position() {
         return zero_position;
     }
-
     public void setZero_position(AReferencePoint zero_position) {
         this.zero_position = zero_position;
     }
 
+    public RingBuffer<IDataPoint> getDrawedData_buffer() {
+        return drawedData_buffer;
+    }
+    public void setDrawedData_buffer(RingBuffer<IDataPoint> drawedData_buffer) {
+        this.drawedData_buffer = drawedData_buffer;
+    }
+    
     // protected methods
     protected abstract StaticRingBuffer<T> initDrawingElementsPool();
     

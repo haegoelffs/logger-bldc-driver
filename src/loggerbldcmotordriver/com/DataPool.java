@@ -2,6 +2,7 @@ package loggerbldcmotordriver.com;
 
 import loggerbldcmotordriver.RingBuffer;
 import loggerbldcmotordriver.RingBufferException;
+import loggerbldcmotordriver.TimeDataGroup;
 
 /**
  *
@@ -10,16 +11,27 @@ import loggerbldcmotordriver.RingBufferException;
 public class DataPool
 {
 
-    private static final int SIZE_LONG_DATA_POOL = 2000;
+    private static final int DEFAULT_POOL_SIZE = 4000;
 
-    private final RingBuffer<LongData> longData_pool;
+    private final RingBuffer<TimeData> timeData_pool;
+
+    private final RingBuffer<TimeDataGroup> timeDataGroup_pool;
 
     public DataPool() {
-        longData_pool = new RingBuffer<>(LongData.class, SIZE_LONG_DATA_POOL);
-
-        for (int cnt = 0; cnt < SIZE_LONG_DATA_POOL; cnt++) {
+        timeData_pool = new RingBuffer<>(TimeData.class, DEFAULT_POOL_SIZE);
+        for (int cnt = 0; cnt < timeData_pool.getCapacity(); cnt++) {
             try {
-                longData_pool.put(new LongData(0, 0));
+                timeData_pool.put(new TimeData(0, 0));
+            }
+            catch (RingBufferException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        timeDataGroup_pool = new RingBuffer<>(TimeDataGroup.class, DEFAULT_POOL_SIZE);
+        for (int cnt = 0; cnt < timeDataGroup_pool.getCapacity(); cnt++) {
+            try {
+                timeDataGroup_pool.put(new TimeDataGroup(0));
             }
             catch (RingBufferException ex) {
                 throw new RuntimeException(ex);
@@ -27,13 +39,42 @@ public class DataPool
         }
     }
 
-    public LongData getLongData() {
-        return longData_pool.get();
+    public TimeData getTimeData() {
+        try {
+            TimeData temp = timeData_pool.getNullSafe();
+            return temp;
+        }
+        catch (RingBufferException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
-    public void recycleLongData(LongData data) {
+    public void recycleTimeData(TimeData data) {
+        data.setTimestamp_us(0).setValue(0).setOlder(null).setYounger(null);
+
         try {
-            longData_pool.put(data);
+            timeData_pool.put(data);
+        }
+        catch (RingBufferException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public TimeDataGroup getTimeDataGroup() {
+        try {
+            TimeDataGroup temp = timeDataGroup_pool.getNullSafe();
+            return temp;
+        }
+        catch (RingBufferException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void recycleTimeDataGroup(TimeDataGroup data) {
+        data.setDuration_in_us(0).setStart_in_us(0).setFirstData(null).setLastData(null);
+
+        try {
+            timeDataGroup_pool.put(data);
         }
         catch (RingBufferException ex) {
             throw new RuntimeException(ex);

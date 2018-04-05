@@ -1,6 +1,5 @@
 package loggerbldcmotordriver.view;
 
-import loggerbldcmotordriver.datahandler.TimeDataGroup;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import loggerbldcmotordriver.framework.TimeValueData;
 import loggerbldcmotordriver.framework.MessageData;
 import loggerbldcmotordriver.datahandler.DataHandler;
 import loggerbldcmotordriver.view.figures.DotsGraph;
@@ -22,7 +20,6 @@ import loggerbldcmotordriver.view.builder.EditChannelPropertiesBuilder;
 import loggerbldcmotordriver.view.builder.listener.ISelectTimeResolutionListener;
 import loggerbldcmotordriver.view.builder.ListLogMsgBuilder;
 import loggerbldcmotordriver.view.builder.EnableChannelBuilder;
-import loggerbldcmotordriver.view.builder.GUIStringCollection;
 import loggerbldcmotordriver.view.builder.SelectTimeResolutionBuilder;
 import loggerbldcmotordriver.view.builder.listener.IEnableChannelListener;
 
@@ -101,7 +98,7 @@ public class LoggerBLDCMotorDriver extends Application implements ISelectTimeRes
 
     @Override
     public void enableChannel(String channel, boolean enable) {
-        switch (channel) {
+        /*switch (channel) {
             case GUIStringCollection.CHANNEL_FREQUENZY:
                 dataHandler.getComManager().setRot_freq_enabled(enable);
                 break;
@@ -117,7 +114,7 @@ public class LoggerBLDCMotorDriver extends Application implements ISelectTimeRes
             case GUIStringCollection.CHANNEL_CYCLE_TIME:
                 dataHandler.getComManager().setCycletime_enabled(enable);
                 break;
-        }
+        }*/
     }
 
     @Override

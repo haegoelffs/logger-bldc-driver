@@ -1,12 +1,11 @@
 package loggerbldcmotordriver.datahandler;
 
-import loggerbldcmotordriver.communication.CommunicationManager;
 import loggerbldcmotordriver.framework.DataPool;
 import loggerbldcmotordriver.framework.MessageData;
-import loggerbldcmotordriver.communication.SimulatorWrapper;
 import loggerbldcmotordriver.view.figures.IDataPoint;
 import loggerbldcmotordriver.framework.IDataSink;
 import loggerbldcmotordriver.framework.TimeValueData;
+import loggerbldcmotordriver.serialcom.DataManager;
 
 /**
  *
@@ -15,7 +14,7 @@ import loggerbldcmotordriver.framework.TimeValueData;
 public class DataHandler extends Thread
 {
     private final DataPool dataPool;
-    private final CommunicationManager comManager;
+    private final DataManager comManager;
     
     private final MessagesHandler msg_handler;
     private final ValuesHandler freq_handler;
@@ -25,7 +24,8 @@ public class DataHandler extends Thread
         
         dataPool = new DataPool();
         
-        comManager = new CommunicationManager(dataPool, new SimulatorWrapper());
+        //comManager = new CommunicationManager(dataPool, new SimulatorWrapper());
+        comManager = new DataManager(dataPool);
         
         msg_handler=new MessagesHandler(comManager.getMessages_buffer(), dataPool, ds_messages);
         freq_handler = new ValuesHandler(comManager.getRotationFrequenzy_buffer(), ds_freq_data, dataPool, 100000);
@@ -65,7 +65,7 @@ public class DataHandler extends Thread
     
     // getter & setter
 
-    public CommunicationManager getComManager() {
+    public DataManager getComManager() {
         return comManager;
     }
     

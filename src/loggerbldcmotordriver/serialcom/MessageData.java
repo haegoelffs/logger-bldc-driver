@@ -1,5 +1,5 @@
 
-package loggerbldcmotordriver.framework;
+package loggerbldcmotordriver.serialcom;
 
 /**
  *

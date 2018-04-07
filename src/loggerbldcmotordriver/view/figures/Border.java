@@ -12,7 +12,7 @@ import loggerbldcmotordriver.view.references.ReferencePoint;
  *
  * @author simon
  */
-public class Border implements IDrawable
+public class Border implements IDrawableElement
 {
     private final AReferencePoint left_upper_corner;
     

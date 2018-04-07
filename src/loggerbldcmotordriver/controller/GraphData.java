@@ -1,29 +1,28 @@
 
-package loggerbldcmotordriver.datahandler;
+package loggerbldcmotordriver.controller;
 
-import loggerbldcmotordriver.framework.TimeValueData;
+import loggerbldcmotordriver.serialcom.TimeValueData;
 import loggerbldcmotordriver.view.figures.IDataPoint;
 
 /**
  *
  * @author simon
  */
-public class TimeDataGroup implements IDataPoint
+public class GraphData implements IDataPoint
 {
     private TimeValueData firstData, lastData;
     
     private long start_in_us;
     private long duration_in_us;
 
-    public TimeDataGroup(long duration_in_us) {
-        this.duration_in_us = duration_in_us;
+    public GraphData() {
     }
 
     public TimeValueData getFirstData() {
         return firstData;
     }
 
-    public TimeDataGroup setFirstData(TimeValueData firstData) {
+    public GraphData setFirstData(TimeValueData firstData) {
         this.firstData = firstData;
         return this;
     }
@@ -32,7 +31,7 @@ public class TimeDataGroup implements IDataPoint
         return lastData;
     }
 
-    public TimeDataGroup setLastData(TimeValueData lastData) {
+    public GraphData setLastData(TimeValueData lastData) {
         this.lastData = lastData;
         return this;
     }
@@ -41,7 +40,7 @@ public class TimeDataGroup implements IDataPoint
         return start_in_us;
     }
 
-    public TimeDataGroup setStart_in_us(long start_in_us) {
+    public GraphData setStart_in_us(long start_in_us) {
         this.start_in_us = start_in_us;
         return this;
     }
@@ -50,7 +49,7 @@ public class TimeDataGroup implements IDataPoint
         return duration_in_us;
     }
 
-    public TimeDataGroup setDuration_in_us(long duration_in_us) {
+    public GraphData setDuration_in_us(long duration_in_us) {
         this.duration_in_us = duration_in_us;
         return this;
     }    
@@ -79,7 +78,7 @@ public class TimeDataGroup implements IDataPoint
                 return value/cnt;
             }
             
-            data = data.getYounger();
+            data = data.getNext();
             cnt++;
         }
     }

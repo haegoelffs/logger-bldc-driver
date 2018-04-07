@@ -1,4 +1,4 @@
-package loggerbldcmotordriver.datahandler.properties;
+package loggerbldcmotordriver.view;
 
 import com.sun.javafx.binding.ExpressionHelper;
 import java.lang.ref.WeakReference;

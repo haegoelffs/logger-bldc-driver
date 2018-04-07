@@ -1,5 +1,5 @@
 
-package loggerbldcmotordriver.datahandler.properties;
+package loggerbldcmotordriver.view;
 
 /**
  *

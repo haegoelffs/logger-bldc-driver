@@ -1,11 +1,10 @@
 
-package loggerbldcmotordriver.view.builder;
+package loggerbldcmotordriver.view;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
-import loggerbldcmotordriver.view.LogMsgData;
 
 /**
  *
@@ -22,7 +21,7 @@ public class ListLogMsgBuilder
         
         table.setItems(datas);
         
-        this.view = new TitledPane(GUIStringCollection.LIST_STRING_LOGS, table);
+        this.view = new TitledPane("Meldungen", table);
         this.view.setCollapsible(false);
     }
     
@@ -30,12 +29,12 @@ public class ListLogMsgBuilder
         table = new TableView<>();
 
         {
-            TableColumn<LogMsgData, String> column = new TableColumn(GUIStringCollection.LIST_TIMESTAMP);
+            TableColumn<LogMsgData, String> column = new TableColumn("Zeitstempel");
             column.setCellValueFactory(cellData -> cellData.getValue().getTimestamp_property());
             table.getColumns().add(column);
         }
         {
-            TableColumn<LogMsgData, String> column = new TableColumn(GUIStringCollection.LIST_MSG);
+            TableColumn<LogMsgData, String> column = new TableColumn("Meldung");
             column.setCellValueFactory(cellData -> cellData.getValue().getMsg_property());
             table.getColumns().add(column);
         }

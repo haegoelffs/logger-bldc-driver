@@ -5,41 +5,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import loggerbldcmotordriver.framework.MessageData;
 import loggerbldcmotordriver.datahandler.DataHandler;
 import loggerbldcmotordriver.view.figures.DotsGraph;
-import loggerbldcmotordriver.view.figures.IDataPoint;
-import loggerbldcmotordriver.framework.IDataSink;
 import loggerbldcmotordriver.view.figures.LineGraph;
-import loggerbldcmotordriver.view.figures.PlotContainer;
-import loggerbldcmotordriver.view.builder.EditChannelPropertiesBuilder;
-import loggerbldcmotordriver.view.builder.listener.ISelectTimeResolutionListener;
-import loggerbldcmotordriver.view.builder.ListLogMsgBuilder;
-import loggerbldcmotordriver.view.builder.EnableChannelBuilder;
-import loggerbldcmotordriver.view.builder.SelectTimeResolutionBuilder;
-import loggerbldcmotordriver.view.builder.listener.IEnableChannelListener;
+import loggerbldcmotordriver.view.figures.LivePlotContainer;
 
 /**
  *
  * @author simon
  */
-public class LoggerBLDCMotorDriver extends Application implements ISelectTimeResolutionListener, IEnableChannelListener, IDataSink<IDataPoint>
+public class LoggerBLDCMotorDriver extends Application
 {
-
-    private int x_size_in_px = 1000;
-    private int y_size_in_px = 512;
-
-    double xScale_px_per_ms = 0.1;
-    double yScale_px_per_value = 0.25;
-
+    private int plot_lenght_px = 1000;
+    private int plot_height_px = 400;
     // view
     DotsGraph dotsGraph;
-    LineGraph frequenzy_graph;
-    PlotContainer plotContainer;
+    LivePlotContainer mainPlotContainer;
 
     // model
     private DataHandler dataHandler;
@@ -48,18 +33,11 @@ public class LoggerBLDCMotorDriver extends Application implements ISelectTimeRes
     public void start(Stage stage) {
         ObservableList<LogMsgData> messages = FXCollections.observableArrayList();
         
-        // legend
-        SelectTimeResolutionBuilder timeResBuilder = new SelectTimeResolutionBuilder(this);
-        EnableChannelBuilder channelBuilder = new EnableChannelBuilder(this);
-        EditChannelPropertiesBuilder editChannelPropertiesBuilder = new EditChannelPropertiesBuilder(this);
         ListLogMsgBuilder listLogMsgBuilder = new ListLogMsgBuilder(messages);
-
-        HBox legend = new HBox(timeResBuilder.getView(), channelBuilder.getView(), editChannelPropertiesBuilder.getView());
-        legend.setSpacing(5);
 
         Group root = new Group();
 
-        VBox vbox = new VBox(root, legend, listLogMsgBuilder.getView());
+        VBox vbox = new VBox(root, listLogMsgBuilder.getView());
 
         Scene theScene = new Scene(vbox);
         stage.setScene(theScene);
@@ -67,21 +45,16 @@ public class LoggerBLDCMotorDriver extends Application implements ISelectTimeRes
         stage.setTitle("Logger BLDC Motor - FHNW Bachelor Thesis Bühlmann & Rotzler 2018");
         stage.show();
 
-        x_size_in_px = (int) Screen.getPrimary().getVisualBounds().getWidth();
+        plot_lenght_px = (int) Screen.getPrimary().getVisualBounds().getWidth();
 
         TimeReference timeReference = new TimeReference();
 
-        plotContainer = new PlotContainer(timeReference, this, x_size_in_px, y_size_in_px, xScale_px_per_ms);
-        root.getChildren().add(plotContainer.getPlot());
-        frequenzy_graph = plotContainer.addLineGraph("noise", yScale_px_per_value);
-
-        dataHandler = new DataHandler(
-                (MessageData data) -> {
-                    messages.add(new LogMsgData(data));
-                },
-                (IDataPoint data) -> {
-                    frequenzy_graph.put(data);
-                });
+        mainPlotContainer = new LivePlotContainer(plot_lenght_px, plot_height_px, 100, 50, 50);
+        root.getChildren().add(mainPlotContainer.getPlot());
+        
+        
+        // init graphs
+        LineGraph frequenzy_graph = mainPlotContainer.addLineGraph("frequenzy", "Hz", Color.BLUE, 0, 700);
     }
 
     /**
@@ -90,37 +63,4 @@ public class LoggerBLDCMotorDriver extends Application implements ISelectTimeRes
     public static void main(String[] args) {
         launch(args);
     }
-
-    @Override
-    public void timeResolutionSelected(int ms_per_interval) {
-        plotContainer.set_timeMs_per_interval(ms_per_interval);
-    }
-
-    @Override
-    public void enableChannel(String channel, boolean enable) {
-        /*switch (channel) {
-            case GUIStringCollection.CHANNEL_FREQUENZY:
-                dataHandler.getComManager().setRot_freq_enabled(enable);
-                break;
-            case GUIStringCollection.CHANNEL_ROT_POS:
-                dataHandler.getComManager().setRot_pos_enabled(enable);
-                break;
-            case GUIStringCollection.CHANNEL_ROT_POS_SETPOINT:
-                dataHandler.getComManager().setRot_pos_setpoint_enabled(enable);
-                break;
-            case GUIStringCollection.CHANNEL_ROT_POS_CONTROL_OUT:
-                dataHandler.getComManager().setRot_pos_controller_out_enabled(enable);
-                break;
-            case GUIStringCollection.CHANNEL_CYCLE_TIME:
-                dataHandler.getComManager().setCycletime_enabled(enable);
-                break;
-        }*/
-    }
-
-    @Override
-    public void put(IDataPoint data) {
-        dataHandler.recycleData(data);
-    }
-    
-    
 }

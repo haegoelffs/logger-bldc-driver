@@ -11,7 +11,7 @@ import loggerbldcmotordriver.view.references.AReferencePoint;
  * @author simon
  * @param <T>
  */
-public abstract class AGraph<T> implements ITimeSynchronizedDrawable
+public abstract class AGraph<T> implements IDrawableElement
 {
     protected AReferencePoint zero_position;
 
@@ -89,11 +89,8 @@ public abstract class AGraph<T> implements ITimeSynchronizedDrawable
         this.lenght_px = lenght_px;
     }
 
-    public AReferencePoint getZero_position() {
-        return zero_position;
-    }
-    public void setZero_position(AReferencePoint zero_position) {
-        this.zero_position = zero_position;
+    public long getxAxis_start_ms() {
+        return xAxis_start_ms;
     }
 
     public RingBuffer<IDataPoint> getDrawedData_buffer() {

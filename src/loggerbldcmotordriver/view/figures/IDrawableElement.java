@@ -7,7 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
  *
  * @author simon
  */
-public interface IDrawable
+public interface IDrawableElement
 {
     public void draw(GraphicsContext gc);
 }

@@ -2,9 +2,7 @@
 package loggerbldcmotordriver.view;
 
 import javafx.beans.property.StringProperty;
-import loggerbldcmotordriver.framework.MessageData;
-import loggerbldcmotordriver.datahandler.properties.IPropertyData;
-import loggerbldcmotordriver.datahandler.properties.StringAdapterProperty;
+import loggerbldcmotordriver.serialcom.MessageData;
 
 /**
  *

@@ -1,5 +1,5 @@
 
-package loggerbldcmotordriver.framework;
+package loggerbldcmotordriver.serialcom;
 
 /**
  *
@@ -12,17 +12,18 @@ public class TimeValueData
     private long value;
 
     // position in time axis
-    private TimeValueData older, younger;
+    private TimeValueData previous, next;
     
-    public TimeValueData(long timestamp_us, long value) {
+    public TimeValueData(long timestamp_us, long value, TimeValueData previous) {
         this.timestamp_us = timestamp_us;
         this.value = value;
+        this.previous = previous;
     }
     
     public TimeValueData set(long timestamp_us, long data, TimeValueData older){
         this.timestamp_us = timestamp_us;
         this.value = data;
-        this.older = older;
+        this.previous = older;
         
         return this;
     }
@@ -45,21 +46,21 @@ public class TimeValueData
         return this;
     }
 
-    public TimeValueData getOlder() {
-        return older;
+    public TimeValueData getPrevious() {
+        return previous;
     }
 
-    public TimeValueData setOlder(TimeValueData older) {
-        this.older = older;
+    public TimeValueData setPrevious(TimeValueData older) {
+        this.previous = older;
         return this;
     }
 
-    public TimeValueData getYounger() {
-        return younger;
+    public TimeValueData getNext() {
+        return next;
     }
 
-    public TimeValueData setYounger(TimeValueData younger) {
-        this.younger = younger;
+    public TimeValueData setNext(TimeValueData younger) {
+        this.next = younger;
         return this;
     }
     

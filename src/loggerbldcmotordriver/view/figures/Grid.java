@@ -10,7 +10,7 @@ import loggerbldcmotordriver.view.references.ReferencePoint;
  *
  * @author simon
  */
-public class Grid implements IDrawable
+public class Grid implements IDrawableElement
 {
     private final static int DEFAULT_BORDER_WIDTH = 4;
     private final static Color DEFAULT_LINE_COLOR = Color.LIGHTGRAY;
@@ -40,6 +40,14 @@ public class Grid implements IDrawable
 
     public ReferencePoint getZero_point() {
         return zero_point;
+    }
+
+    public Scale getHorizontal_scale() {
+        return horizontal_scale;
+    }
+
+    public Scale getVertical_scale() {
+        return vertical_scale;
     }
 
     @Override

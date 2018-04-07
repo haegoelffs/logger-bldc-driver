@@ -87,5 +87,6 @@ public class UARTProtoManager
     public interface Listener{
         public void bufferGenericMsg(long timestamp, String msg);
         public void bufferRotationFrequenzy(long timestamp, long frequenzy);
+        public void bufferCycleTime(long timestamp, long cycleTime);
     }
 }

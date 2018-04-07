@@ -12,7 +12,7 @@ import loggerbldcmotordriver.view.references.ReferencePoint;
  *
  * @author simon
  */
-public class Line implements IReferencePointContainer, IDrawable
+public class Line implements IReferencePointContainer, IDrawableElement
 {
     protected AReferencePoint reference, startPoint, endPoint;
     protected int width;

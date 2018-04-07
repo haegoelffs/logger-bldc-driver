@@ -9,7 +9,7 @@ import loggerbldcmotordriver.view.references.ReferencePoint;
  *
  * @author simon
  */
-public class Dot implements IDrawable
+public class Dot implements IDrawableElement
 {
     private ReferencePoint position;
     

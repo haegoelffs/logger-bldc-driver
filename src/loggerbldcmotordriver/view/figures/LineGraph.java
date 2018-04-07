@@ -45,7 +45,7 @@ public class LineGraph extends AGraph<Line>
     }
 
     @Override
-    public synchronized void draw(GraphicsContext gc, long elapsed_t_ms) {
+    public synchronized void draw(GraphicsContext gc) {
         IDataPoint data = dataToDraw_buffer.get();
         if (data != null) {
             try {
